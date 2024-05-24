@@ -20,8 +20,8 @@ public class MediaCrawlController {
         config.setIncludeBinaryContentInCrawling(true);
     }
 
-    public void startCrawling(List<String> crawlDomains) throws Exception {
-        for (String domain : crawlDomains) {
+    public void startCrawling(List < String > crawlDomains) throws Exception {
+        for (String domain: crawlDomains) {
             String domainName = domain.replaceAll("https?://", "").replaceAll("[^a-zA-Z0-9]", "_");
             String extractPath = System.getProperty("user.dir") + "/extract/" + domainName;
 
@@ -36,7 +36,7 @@ public class MediaCrawlController {
                 throw new IllegalStateException("Failed to create storage folder: " + storageFolder.getAbsolutePath());
             }
 
-            CrawlController.WebCrawlerFactory<MediaCrawler> factory = () -> new MediaCrawler(storageFolder, List.of(domain));
+            CrawlController.WebCrawlerFactory < MediaCrawler > factory = () -> new MediaCrawler(storageFolder, List.of(domain));
             controller.start(factory, 8);
         }
     }

@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,28 +37,31 @@ public class MediaCrawler extends WebCrawler {
     private static final Pattern imgPatterns = Pattern.compile(".*(\\.(bmp|gif|jpe?g|png|tiff?))$");
     private static final Pattern audioPatterns = Pattern.compile(".*(\\.(mid|mp2|mp3|wav|wma))$");
     private static final Pattern videoPatterns = Pattern.compile(".*(\\.(mp4|avi|mov|mpeg|ram|m4v|rm|smil|wmv|swf|webm))$");
-
+    
+    private static final String imageFolderName = "Image";
+    private static final String audioFolderName = "Audio";
+    private static final String videoFolderName = "Video";
+    
     private final File imageFolder;
     private final File audioFolder;
     private final File videoFolder;
-    private final List<String> crawlDomains;
+    private final List < String > crawlDomains;
     private final File csvFile;
 
+    private static final int MAX_FILES = 10;
+    private static final Set < String > imageUrls = new HashSet < > ();
+    private static final Set < String > audioUrls = new HashSet < > ();
+    private static final Set < String > videoUrls = new HashSet < > ();
+    private static final Set < String > mediaUrls = new HashSet < > ();
 
-    private static final int MAX_FILES = 6;
-    private static final Set<String> imageUrls = new HashSet<>();
-    private static final Set<String> audioUrls = new HashSet<>();
-    private static final Set<String> videoUrls = new HashSet<>();
-    private static final Set<String> mediaUrls = new HashSet<>();
+    private final Set < String > existingRecords = new HashSet < > ();
 
-    private final Set<String> existingRecords = new HashSet<>();
-
-    public MediaCrawler(File storageFolder, List<String> crawlDomains) {
+    public MediaCrawler(File storageFolder, List < String > crawlDomains) {
         this.crawlDomains = ImmutableList.copyOf(crawlDomains);
 
-        this.imageFolder = new File(storageFolder, "Image");
-        this.audioFolder = new File(storageFolder, "Audio");
-        this.videoFolder = new File(storageFolder, "Video");
+        this.imageFolder = new File(storageFolder, imageFolderName);
+        this.audioFolder = new File(storageFolder, audioFolderName);
+        this.videoFolder = new File(storageFolder, videoFolderName);
 
         if (!imageFolder.exists()) {
             imageFolder.mkdirs();
@@ -69,8 +75,7 @@ public class MediaCrawler extends WebCrawler {
 
         this.csvFile = new File(storageFolder, "ExportDetails.csv");
         if (!csvFile.exists()) {
-            try (FileWriter writer = new FileWriter(csvFile);
-                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type","File Extension", "File Name", "URL"))) {
+            try (FileWriter writer = new FileWriter(csvFile); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type", "File Extension", "File Name", "URL", "Time of Extraction"))) {
                 csvPrinter.flush();
             } catch (IOException e) {
                 WebCrawler.logger.error("Failed to create CSV file: {}", csvFile, e);
@@ -82,8 +87,8 @@ public class MediaCrawler extends WebCrawler {
 
     private void loadExistingRecords() {
         try (FileReader reader = new FileReader(csvFile)) {
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
-            for (CSVRecord record : records) {
+            Iterable < CSVRecord > records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
+            for (CSVRecord record: records) {
                 String fileName = record.get("File Name");
                 String fileType = record.get("File Type");
                 String url = record.get("URL");
@@ -106,7 +111,7 @@ public class MediaCrawler extends WebCrawler {
             return false;
         }
 
-        for (String domain : crawlDomains) {
+        for (String domain: crawlDomains) {
             if (href.startsWith(domain)) {
                 return true;
             }
@@ -128,25 +133,25 @@ public class MediaCrawler extends WebCrawler {
 
             Elements mediaElements = doc.select("img[src], img[data-src], video source[src], video[src], audio source[src], audio[src], a[href]");
 
-            for (Element mediaElement : mediaElements) {
+            for (Element mediaElement: mediaElements) {
                 String mediaUrl = resolveMediaUrl(mediaElement);
                 if (mediaUrl != null) {
                     if (imgPatterns.matcher(mediaUrl).matches()) {
-                        downloadAndSaveFile(mediaUrl, imageFolder, "Image");
+                        downloadAndSaveFile(mediaUrl, imageFolder, imageFolderName);
                     } else if (audioPatterns.matcher(mediaUrl).matches()) {
-                        downloadAndSaveFile(mediaUrl, audioFolder, "Audio");
+                        downloadAndSaveFile(mediaUrl, audioFolder, audioFolderName);
                     } else if (videoPatterns.matcher(mediaUrl).matches()) {
-                        downloadAndSaveFile(mediaUrl, videoFolder, "Video");
+                        downloadAndSaveFile(mediaUrl, videoFolder, videoFolderName);
                     }
                 }
             }
         } else if (page.getParseData() instanceof BinaryParseData) {
             if (imgPatterns.matcher(url).matches()) {
-                downloadAndSaveFile(url, imageFolder, "Image");
+                downloadAndSaveFile(url, imageFolder, imageFolderName);
             } else if (audioPatterns.matcher(url).matches()) {
-                downloadAndSaveFile(url, audioFolder, "Audio");
+                downloadAndSaveFile(url, audioFolder, audioFolderName);
             } else if (videoPatterns.matcher(url).matches()) {
-                downloadAndSaveFile(url, videoFolder, "Video");
+                downloadAndSaveFile(url, videoFolder, videoFolderName);
             }
         }
     }
@@ -160,19 +165,15 @@ public class MediaCrawler extends WebCrawler {
         if (imageUrls.size() > MAX_FILES && audioUrls.size() > MAX_FILES && videoUrls.size() > MAX_FILES) {
             return;
         }
-        if(mediaUrls.contains(url)){
+        if (mediaUrls.contains(url)) {
             WebCrawler.logger.warn("Already downloaded URL - Skipping URL from download: {}", url);
-        }
-        else if ("Image".equals(fileType) && imageUrls.size() > MAX_FILES - 1 ){
+        } else if (imageFolderName.equals(fileType) && imageUrls.size() > MAX_FILES - 1) {
             WebCrawler.logger.warn("Skipping Image URL from download: {}", url);
-        }
-        else if ("Audio".equals(fileType) && audioUrls.size() > MAX_FILES - 1){
+        } else if (audioFolderName.equals(fileType) && audioUrls.size() > MAX_FILES - 1) {
             WebCrawler.logger.warn("Skipping Audio URL from download: {}", url);
-        }
-        else if ("Video".equals(fileType) && videoUrls.size() > MAX_FILES - 1){
+        } else if (videoFolderName.equals(fileType) && videoUrls.size() > MAX_FILES - 1) {
             WebCrawler.logger.warn("Skipping Video URL from download: {}", url);
-        }
-        else {
+        } else {
             String fileName = getFileName(url);
             String filePath = targetFolder.getAbsolutePath() + '/' + fileName;
 
@@ -191,19 +192,18 @@ public class MediaCrawler extends WebCrawler {
                 WebCrawler.logger.error("Error downloading file: {}", url, e);
             }
 
-            switch (fileType)
-            {
-                case "Image":
+            switch (fileType) {
+                case imageFolderName:
                     imageUrls.add(url);
                     mediaUrls.add(url);
                     break;
 
-                case "Audio":
+                case audioFolderName:
                     audioUrls.add(url);
                     mediaUrls.add(url);
                     break;
 
-                case "Video":
+                case videoFolderName:
                     videoUrls.add(url);
                     mediaUrls.add(url);
                     break;
@@ -236,6 +236,9 @@ public class MediaCrawler extends WebCrawler {
     }
 
     private void writeCsvRecord(String fileName, String fileType, String url) {
+        LocalDateTime currentTime = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
         String recordKey = fileName + fileType + url;
         String extension = getFileExtension(url);
         if (existingRecords.contains(recordKey)) {
@@ -243,9 +246,8 @@ public class MediaCrawler extends WebCrawler {
             return;
         }
 
-        try (FileWriter writer = new FileWriter(csvFile, true);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            csvPrinter.printRecord(fileType, extension, fileName, url);
+        try (FileWriter writer = new FileWriter(csvFile, true); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
+            csvPrinter.printRecord(fileType, extension, fileName, url, formattedTime);
             csvPrinter.flush();
             existingRecords.add(recordKey);
         } catch (IOException e) {
