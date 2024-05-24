@@ -84,10 +84,7 @@ The crawling configuration is defined in the MediaCrawlController class. By defa
 
 **Example domains in RunCrawler:**
 ```txt
-List.of(
-    "https://www.shutterstock.com/image-photo/two-women-having-conversation-while-cohosting-2269365599",
-            "https://www.shutterstock.com/image-photo/erp-document-management-concept-working-laptop-1970907203"
-);
+List.of("https://www.freepik.com/videos"
 ```
 
 ## Execute the Crawler
