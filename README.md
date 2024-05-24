@@ -10,6 +10,16 @@ The project consists of three main classes:
 2. **MediaCrawlController**: Sets up and starts the crawling process using configurations defined for the crawler.
 3. **RunCrawler**: Contains the `main` method to initiate the crawling process.
 
+## Table of content
+
+- [Prerequisites](#Prerequisites)
+- [Libraries Used](#Libraries-Used)
+- [Setup and Installation](#Setup-and-Installation)
+- [Configuration](#Configuration)
+- [Execute the Crawler](#Execute-the-Crawler)
+- [Output](#Output)
+- [Extending the Project](#Extending-the-Project)
+
 ## Prerequisites
 
 - Java 8 or higher
@@ -62,8 +72,7 @@ The project uses several libraries to facilitate web crawling, HTML parsing, and
 ## Setup and Installation
 **Clone the repository**:
 ```sh
-git clone https://github.com/aravinds-repo/web_crawling.git
-cd WebCrawling
+git clone https://github.com/aravinds-repo/MediaCrawler.git
 ```
 
 **Install dependencies**:
@@ -82,10 +91,6 @@ The crawling configuration is defined in the MediaCrawlController class. By defa
 **Running the Crawler**
 - To run the crawler, use the RunCrawler class. You can specify the list of domains to crawl by modifying the main method in RunCrawler.
 
-**Example domains in RunCrawler:**
-```txt
-List.of("https://www.freepik.com/videos"
-```
 
 ## Execute the Crawler
 Run the main method in the RunCrawler class using your IDE or from the command line:
@@ -96,21 +101,23 @@ mvn exec:java -Dexec.mainClass="org.example.RunCrawler"
 
 ## Output
 The media files will be stored in the extract directory within the project root, organized by domain. For example:
-```bash
-/extract/www_shutterstock_com_image_photo_two_women_having_conversation_while_cohosting_2269365599/images
-/extract/www_shutterstock_com_image_photo_two_women_having_conversation_while_cohosting_2269365599/audios
-/extract/www_shutterstock_com_image_photo_two_women_having_conversation_while_cohosting_2269365599/videos
+```txt
+/extract/www_example_com/Image
+/extract/www_example_com/Audio
+/extract/www_example_com/Video
 ```
 
 A CSV file ExportDetails.csv will be created in the respective domain's directory, recording the details of each downloaded file.
 
 **Example ExportDetails.csv:**
-```arduino
-File Name,File Type,URL
-example_image.jpg,Image,https://example.com/example_image.jpg
-example_audio.mp3,Audio,https://example.com/example_audio.mp3
-example_video.mp4,Video,https://example.com/example_video.mp4
-```
+
+| File Type | File Extension | File Name         | File Path                     | URL                                    | Time of Extract      |
+|-----------|----------------|-------------------|-------------------------------|----------------------------------------|----------------------|
+| Image     | jpg            | example_image.jpg | /extract/www_example_com/Image | https://example.com/example_image.jpg | 2024-05-25 00:00:00 |
+| Audio     | mp3            | example_video.mp3 | /extract/www_example_com/Audio | https://example.com/example_audio.mp3 | 2024-05-25 00:00:00 |
+| Video     | mp4            | example_video.mp4 | /extract/www_example_com/Video | https://example.com/example_video.mp4 | 2024-05-25 00:00:00 |
+
+
 
 ## Extending the Project
 To extend the project with additional features or different file types:
