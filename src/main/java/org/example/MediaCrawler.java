@@ -76,7 +76,7 @@ public class MediaCrawler extends WebCrawler {
 
         this.csvFile = new File(storageFolder, "ExportDetails.csv");
         if (!csvFile.exists()) {
-            try (FileWriter writer = new FileWriter(csvFile); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type", "File Extension", "File Name", "URL", "Time of Extraction"))) {
+            try (FileWriter writer = new FileWriter(csvFile); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type", "File Extension", "File Name", "File Path", "URL", "Time of Extraction"))) {
                 csvPrinter.flush();
             } catch (IOException e) {
                 WebCrawler.logger.error("Failed to create CSV file: {}", csvFile, e);
@@ -169,14 +169,14 @@ public class MediaCrawler extends WebCrawler {
         if (mediaUrls.contains(url)) {
             WebCrawler.logger.warn("Already downloaded URL - Skipping URL from download: {}", url);
         } else if (imageFolderName.equals(fileType) && imageUrls.size() > MAX_FILES - 1) {
-            WebCrawler.logger.warn("Skipping Image URL from download: {}", url);
+            WebCrawler.logger.warn("Image fetch limit reached, skipping Image URL from download: {}", url);
         } else if (audioFolderName.equals(fileType) && audioUrls.size() > MAX_FILES - 1) {
-            WebCrawler.logger.warn("Skipping Audio URL from download: {}", url);
+            WebCrawler.logger.warn("Audio fetch limit reached, skipping Audio URL from download: {}", url);
         } else if (videoFolderName.equals(fileType) && videoUrls.size() > MAX_FILES - 1) {
-            WebCrawler.logger.warn("Skipping Video URL from download: {}", url);
+            WebCrawler.logger.warn("Video fetch limit reached, skipping Video URL from download: {}", url);
         } else {
             String fileName = getFileName(url);
-            String filePath = targetFolder.getAbsolutePath() + '/' + fileName;
+            String filePath = targetFolder.getAbsolutePath() + '\\' + fileName;
 
             try {
                 HttpURLConnection connection = createConnection(url);
@@ -185,7 +185,7 @@ public class MediaCrawler extends WebCrawler {
                     byte[] contentData = connection.getInputStream().readAllBytes();
                     Files.write(contentData, new File(filePath));
                     WebCrawler.logger.info("Stored: {} in {}", url, filePath);
-                    writeCsvRecord(fileName, fileType, url);
+                    writeCsvRecord(fileName, fileType, url, filePath);
                 } else {
                     WebCrawler.logger.warn("Failed to download file: {} with response code: {}", url, responseCode);
                 }
@@ -236,7 +236,8 @@ public class MediaCrawler extends WebCrawler {
         }
     }
 
-    private void writeCsvRecord(String fileName, String fileType, String url) {
+    private void writeCsvRecord(String fileName, String fileType, String url, String filePath) {
+        String extractPath = filePath.replace(System.getProperty("user.dir") , "");
         LocalDateTime currentTime = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = currentTime.format(formatter);
@@ -247,7 +248,7 @@ public class MediaCrawler extends WebCrawler {
         }
 
         try (FileWriter writer = new FileWriter(csvFile, true); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            csvPrinter.printRecord(fileType, extension, fileName, url, formattedTime);
+            csvPrinter.printRecord(fileType, extension, fileName,extractPath, url, formattedTime);
             csvPrinter.flush();
             existingUrls.add(url);
         } catch (IOException e) {
