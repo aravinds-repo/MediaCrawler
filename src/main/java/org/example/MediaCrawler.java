@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 
+import static com.google.common.io.Files.getFileExtension;
+
 public class MediaCrawler extends WebCrawler {
 
     private static final Pattern filters = Pattern.compile(".*(\\.(css|js|pdf|zip|rar|gz))$");
@@ -68,7 +70,7 @@ public class MediaCrawler extends WebCrawler {
         this.csvFile = new File(storageFolder, "ExportDetails.csv");
         if (!csvFile.exists()) {
             try (FileWriter writer = new FileWriter(csvFile);
-                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Name", "File Type", "URL"))) {
+                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type","File Extension", "File Name", "URL"))) {
                 csvPrinter.flush();
             } catch (IOException e) {
                 WebCrawler.logger.error("Failed to create CSV file: {}", csvFile, e);
@@ -235,6 +237,7 @@ public class MediaCrawler extends WebCrawler {
 
     private void writeCsvRecord(String fileName, String fileType, String url) {
         String recordKey = fileName + fileType + url;
+        String extension = getFileExtension(url);
         if (existingRecords.contains(recordKey)) {
             WebCrawler.logger.info("Skipping duplicate record: {}", recordKey);
             return;
@@ -242,7 +245,7 @@ public class MediaCrawler extends WebCrawler {
 
         try (FileWriter writer = new FileWriter(csvFile, true);
              CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            csvPrinter.printRecord(fileName, fileType, url);
+            csvPrinter.printRecord(fileType, extension, fileName, url);
             csvPrinter.flush();
             existingRecords.add(recordKey);
         } catch (IOException e) {

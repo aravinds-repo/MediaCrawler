@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2759f3c1-066c-40d9-8e16-155cbba292f0" name="Changes" comment="WebCrawler" />
+    <list default="true" id="2759f3c1-066c-40d9-8e16-155cbba292f0" name="Changes" comment="WebCrawler">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/RunCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/RunCrawler.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,18 +17,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "aravinds-repo"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;aravinds-repo&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/aravinds-repo/MediaCrawler.git",
-    "accountId": "5157a5b1-e0ef-4143-8a3b-9dbdb24ffb47"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/aravinds-repo/MediaCrawler.git&quot;,
+    &quot;accountId&quot;: &quot;5157a5b1-e0ef-4143-8a3b-9dbdb24ffb47&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -33,9 +37,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2gv5tmhHQM7Cet4tUHluQGjy4Nj" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -50,9 +54,9 @@
     "kotlin-language-version-configured": "true",
     "onboarding.tips.debug.path": "C:/Users/lenov/GitHub/MediaCrawler/src/main/java/org/example/Main.java",
     "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
+    "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "MavenSettings"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RunManager">
@@ -100,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716566050900</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="WebCrawler">
+      <option name="closed" value="true" />
+      <created>1716566486951</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1716566486951</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -117,10 +129,15 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/example/MediaCrawler.java</url>
-          <line>181</line>
+          <line>183</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="url" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
