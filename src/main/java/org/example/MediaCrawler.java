@@ -63,15 +63,16 @@ public class MediaCrawler extends WebCrawler {
         this.audioFolder = new File(storageFolder, audioFolderName);
         this.videoFolder = new File(storageFolder, videoFolderName);
 
-        if (!imageFolder.exists()) {
-            imageFolder.mkdirs();
+        if (!imageFolder.exists() && !imageFolder.mkdirs()) {
+            throw new IllegalStateException("Failed to create image folder: " + imageFolder.getAbsolutePath());
         }
-        if (!audioFolder.exists()) {
-            audioFolder.mkdirs();
+        if (!audioFolder.exists() && !audioFolder.mkdirs()) {
+            throw new IllegalStateException("Failed to create audio folder: " + audioFolder.getAbsolutePath());
         }
-        if (!videoFolder.exists()) {
-            videoFolder.mkdirs();
+        if (!videoFolder.exists() && !videoFolder.mkdirs()) {
+            throw new IllegalStateException("Failed to create video folder: " + videoFolder.getAbsolutePath());
         }
+
 
         this.csvFile = new File(storageFolder, "ExportDetails.csv");
         if (!csvFile.exists()) {
