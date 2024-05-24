@@ -25,6 +25,7 @@ The project consists of three main classes:
 7. [Output](#output)
    - [Example ExportDetails.csv](#example-exportdetailscsv)
 8. [Extending the Project](#extending-the-project)
+9. [Class created](#class-created)
 
 
 ## Prerequisites
@@ -133,8 +134,8 @@ To extend the project with additional features or different file types:
 2. Update the visit method in MediaCrawler to handle new types of media or data processing requirements.
 
 ----
-
-## Table of Contents
+## Class created
+### Table of Contents
 
 1. [MediaCrawler Class](#mediacrawler-class)
    - [Overview](#overview)
@@ -162,18 +163,18 @@ To extend the project with additional features or different file types:
    - [Usage](#usage-2)
 
 
-# MediaCrawler Class
+## MediaCrawler Class
 
-## Overview
+### Overview
 
 The `MediaCrawler` class is responsible for crawling web pages and extracting media files such as images, audio, and video files. It extends the `WebCrawler` class from the `crawler4j` library and implements methods to visit web pages, identify media elements, download media files, and store their details in a CSV file.
 
-## Dependencies
+### Dependencies
 
 - `crawler4j`: A Java library for web crawling and scraping.
 - `jsoup`: A Java library for working with HTML documents.
 
-## Class Structure
+### Class Structure
 
 - **Member Variables:**
    - `filters`, `imgPatterns`, `audioPatterns`, `videoPatterns`: Regular expressions to filter URLs based on file extensions.
@@ -197,7 +198,7 @@ The `MediaCrawler` class is responsible for crawling web pages and extracting me
    - `getFileName`: Extracts the file name from a URL.
    - `writeCsvRecord`: Writes media file details to the CSV file.
 
-## Usage
+### Usage
 
 The `MediaCrawler` class is typically used in conjunction with the `MediaCrawlController` class to initiate the crawling process.
 
@@ -205,11 +206,11 @@ The `MediaCrawler` class is typically used in conjunction with the `MediaCrawlCo
 
 # MediaCrawlController Class
 
-## Overview
+### Overview
 
 The `MediaCrawlController` class is responsible for controlling the web crawling process using the `crawler4j` library. It sets up the crawling configuration, initializes the CrawlController, and starts crawling for the specified domain(s) using the `MediaCrawler` class.
 
-## Dependencies
+### Dependencies
 
 - `crawler4j`: A Java library for web crawling and scraping.
 
@@ -224,24 +225,24 @@ The `MediaCrawlController` class is responsible for controlling the web crawling
 - **Methods:**
    - `startCrawling`: Initiates the crawling process for the specified list of crawl domains.
 
-## Usage
+### Usage
 
 Instantiate the `MediaCrawlController` class and call the `startCrawling` method with the list of crawl domains to begin the crawling process.
 
 
 ---
 
-# RunCrawler Class
+## RunCrawler Class
 
-## Overview
+### Overview
 
 The `RunCrawler` class contains the `main` method to start the web crawling process. It creates an instance of the `MediaCrawlController` class and calls the `startCrawling` method with the list of seed URLs.
 
-## Dependencies
+### Dependencies
 
 None
 
-## Class Structure
+### Class Structure
 
 - **Main Method:**
    - Instantiates the `MediaCrawlController` class.
@@ -251,7 +252,7 @@ None
 
 Run the `main` method of the `RunCrawler` class to start crawling for the specified seed URLs.
 
----
+----
 
 
 
