@@ -68,13 +68,9 @@ cd WebCrawling
 
 **Install dependencies**:
 ```sh
-mvn clean install
+mvn clean package install
 ```
 
-**Install dependencies**:
-```sh
-mvn clean install
-```
 
 ## Configuration
 The crawling configuration is defined in the MediaCrawlController class. By default, it is set to:
