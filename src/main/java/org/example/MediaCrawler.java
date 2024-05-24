@@ -45,7 +45,7 @@ public class MediaCrawler extends WebCrawler {
     private final File imageFolder;
     private final File audioFolder;
     private final File videoFolder;
-    private final List < String > crawlDomains;
+    private final String domain;
     private final File csvFile;
 
     private static final int MAX_FILES = 10;
@@ -56,8 +56,8 @@ public class MediaCrawler extends WebCrawler {
 
     private final Set < String > existingUrls = new HashSet < > ();
 
-    public MediaCrawler(File storageFolder, List < String > crawlDomains) {
-        this.crawlDomains = ImmutableList.copyOf(crawlDomains);
+    public MediaCrawler(File storageFolder, String domain) {
+        this.domain = domain;
 
         this.imageFolder = new File(storageFolder, imageFolderName);
         this.audioFolder = new File(storageFolder, audioFolderName);
@@ -108,13 +108,7 @@ public class MediaCrawler extends WebCrawler {
             return false;
         }
 
-        for (String domain: crawlDomains) {
-            if (href.startsWith(domain)) {
-                return true;
-            }
-        }
-
-        return false;
+        return href.startsWith(domain);
     }
 
     @Override

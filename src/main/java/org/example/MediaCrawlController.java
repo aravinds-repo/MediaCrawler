@@ -36,7 +36,7 @@ public class MediaCrawlController {
                 throw new IllegalStateException("Failed to create storage folder: " + storageFolder.getAbsolutePath());
             }
 
-            CrawlController.WebCrawlerFactory < MediaCrawler > factory = () -> new MediaCrawler(storageFolder, List.of(domain));
+            CrawlController.WebCrawlerFactory < MediaCrawler > factory = () -> new MediaCrawler(storageFolder, domain);
             controller.start(factory, 8);
         }
     }

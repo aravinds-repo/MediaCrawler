@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2759f3c1-066c-40d9-8e16-155cbba292f0" name="Changes" comment="WebCrawler">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawlController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawlController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MediaCrawler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/RunCrawler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/RunCrawler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716585677642</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="WebCrawler">
+      <option name="closed" value="true" />
+      <created>1716586039802</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1716586039802</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
