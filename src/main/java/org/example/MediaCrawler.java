@@ -54,7 +54,7 @@ public class MediaCrawler extends WebCrawler {
     private static final Set < String > videoUrls = new HashSet < > ();
     private static final Set < String > mediaUrls = new HashSet < > ();
 
-    private final Set < String > existingRecords = new HashSet < > ();
+    private final Set < String > existingUrls = new HashSet < > ();
 
     public MediaCrawler(File storageFolder, List < String > crawlDomains) {
         this.crawlDomains = ImmutableList.copyOf(crawlDomains);
@@ -82,19 +82,15 @@ public class MediaCrawler extends WebCrawler {
                 WebCrawler.logger.error("Failed to create CSV file: {}", csvFile, e);
             }
         } else {
-            loadExistingRecords();
+            loadexistingUrls();
         }
     }
 
-    private void loadExistingRecords() {
+    private void loadexistingUrls() {
         try (FileReader reader = new FileReader(csvFile)) {
             Iterable < CSVRecord > records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
             for (CSVRecord record: records) {
-                String fileName = record.get("File Name");
-                String fileType = record.get("File Type");
-                String url = record.get("URL");
-                String recordKey = fileName + fileType + url;
-                existingRecords.add(recordKey);
+                existingUrls.add(record.get("URL"));
             }
         } catch (IOException e) {
             WebCrawler.logger.error("Failed to read existing CSV file: {}", csvFile, e);
@@ -137,7 +133,9 @@ public class MediaCrawler extends WebCrawler {
             for (Element mediaElement: mediaElements) {
                 String mediaUrl = resolveMediaUrl(mediaElement);
                 if (mediaUrl != null) {
-                    if (imgPatterns.matcher(mediaUrl).matches()) {
+                    if (existingUrls.contains(mediaUrl)){
+                        WebCrawler.logger.warn("Skipping URL from download since it is extracted in last run: {}", mediaUrl);
+                    } else if (imgPatterns.matcher(mediaUrl).matches()) {
                         downloadAndSaveFile(mediaUrl, imageFolder, imageFolderName);
                     } else if (audioPatterns.matcher(mediaUrl).matches()) {
                         downloadAndSaveFile(mediaUrl, audioFolder, audioFolderName);
@@ -147,7 +145,9 @@ public class MediaCrawler extends WebCrawler {
                 }
             }
         } else if (page.getParseData() instanceof BinaryParseData) {
-            if (imgPatterns.matcher(url).matches()) {
+            if (existingUrls.contains(url)){
+                WebCrawler.logger.warn("Skipping URL from download since it is extracted in last run: {}", url);
+            } else if (imgPatterns.matcher(url).matches()) {
                 downloadAndSaveFile(url, imageFolder, imageFolderName);
             } else if (audioPatterns.matcher(url).matches()) {
                 downloadAndSaveFile(url, audioFolder, audioFolderName);
@@ -240,17 +240,16 @@ public class MediaCrawler extends WebCrawler {
         LocalDateTime currentTime = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = currentTime.format(formatter);
-        String recordKey = fileName + fileType + url;
         String extension = getFileExtension(url);
-        if (existingRecords.contains(recordKey)) {
-            WebCrawler.logger.info("Skipping duplicate record: {}", recordKey);
+        if (existingUrls.contains(url)) {
+            WebCrawler.logger.info("Skipping duplicate record: {}", url);
             return;
         }
 
         try (FileWriter writer = new FileWriter(csvFile, true); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
             csvPrinter.printRecord(fileType, extension, fileName, url, formattedTime);
             csvPrinter.flush();
-            existingRecords.add(recordKey);
+            existingUrls.add(url);
         } catch (IOException e) {
             WebCrawler.logger.error("Failed to write to CSV file: {}", csvFile, e);
         }

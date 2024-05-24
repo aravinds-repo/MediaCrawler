@@ -6,6 +6,6 @@ public class RunCrawler {
 
     public static void main(String[] args) throws Exception {
         MediaCrawlController controller = new MediaCrawlController();
-        controller.startCrawling(List.of("https://ssmiet.ac.in/"));
+        controller.startCrawling(List.of("https://www.freepik.com/videos"));
     }
 }
