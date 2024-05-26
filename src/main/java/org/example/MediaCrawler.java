@@ -118,7 +118,7 @@ public class MediaCrawler extends WebCrawler {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             Document doc = Jsoup.parse(htmlParseData.getHtml());
 
-            Elements mediaElements = doc.select("img[src], img[data-src], video source[src], video[src], audio source[src], audio[src], a[href], .waveform");
+            Elements mediaElements = doc.select("[src], [data-src], [data-url], [href], [data-href], [srcset], [poster], [data-poster], [data-fullsrc], video, audio, img");
 
             for (Element mediaElement: mediaElements) {
                 String mediaUrl = resolveMediaUrl(mediaElement);
