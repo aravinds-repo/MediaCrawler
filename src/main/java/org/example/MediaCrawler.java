@@ -9,14 +9,12 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -150,12 +148,33 @@ public class MediaCrawler extends WebCrawler {
     }
 
     private String resolveMediaUrl(Element element) {
-        String mediaUrl = element.hasAttr("abs:src") ? element.attr("abs:src") :
-                element.hasAttr("abs:data-src") ? element.attr("abs:data-src") :
-                        element.hasAttr("data-url") ? element.attr("abs:data-url") :
-                                element.attr("abs:href");
-        return mediaUrl.isEmpty() ? null : mediaUrl;
+        List<String> potentialAttributes = Arrays.asList(
+                "src", "data-src", "data-url", "href", "data-href",
+                "srcset", "poster", "data-poster", "data-fullsrc"
+        );
+
+        for (String attribute : potentialAttributes) {
+            if (element.hasAttr(attribute)) {
+                String mediaUrl = element.attr(attribute);
+                if (!mediaUrl.isEmpty()) {
+                    return element.absUrl(attribute);
+                }
+            }
+        }
+
+        for (Attribute attr : element.attributes()) {
+            String attrKey = attr.getKey();
+            if (attrKey.contains("src") || attrKey.contains("href") || attrKey.contains("url")) {
+                String mediaUrl = element.absUrl(attrKey);
+                if (!mediaUrl.isEmpty()) {
+                    return mediaUrl;
+                }
+            }
+        }
+
+        return null;
     }
+
 
     private void downloadAndSaveFile(String url, File targetFolder, String fileType) {
         if (imageUrls.size() > MAX_FILES && audioUrls.size() > MAX_FILES && videoUrls.size() > MAX_FILES) {
@@ -178,12 +197,18 @@ public class MediaCrawler extends WebCrawler {
                 int responseCode = connection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     byte[] contentData = connection.getInputStream().readAllBytes();
-                    Files.write(contentData, new File(filePath));
-                    WebCrawler.logger.info("Stored: {} in {}", url, filePath);
-                    writeCsvRecord(fileName, fileType, url, filePath);
+                    try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath))) {
+                        bos.write(contentData);
+                        bos.flush();
+                        WebCrawler.logger.info("Stored: {} in {}", url, filePath);
+                        writeCsvRecord(fileName, fileType, url, filePath);
+                    } catch (IOException e) {
+                        WebCrawler.logger.error("Error downloading file: {}", url, e);
+                    }
                 } else {
                     WebCrawler.logger.warn("Failed to download file: {} with response code: {}", url, responseCode);
                 }
+                connection.disconnect();
             } catch (IOException e) {
                 WebCrawler.logger.error("Error downloading file: {}", url, e);
             }

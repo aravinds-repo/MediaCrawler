@@ -7,17 +7,14 @@ public class RunCrawler {
     public static void main(String[] args) throws Exception {
         MediaCrawlController controller = new MediaCrawlController();
 
-        List < String > urls = List.of(
-                "https://www.freepik.com/videos",
-                "https://www.shutterstock.com/",
-                "https://www.chosic.com/free-music/all/"
-        );
+        // Sample Image Domain
+//        controller.startCrawling(List.of("https://www.shutterstock.com/"));
 
-        for (String url: urls) {
-            System.out.println("Starting crawl for URL: " + url);
-            Thread.sleep(5 * 1000);
-            controller.startCrawling(List.of(url));
-            System.out.println("Completed crawl for URL: " + url);
-        }
+        // Sample Audio Domain
+//        controller.startCrawling(List.of("https://www.chosic.com/download-audio/27966/"));
+
+        // Sample Video Domain
+//        controller.startCrawling(List.of("https://www.freepik.com/videos"));
+
     }
 }
