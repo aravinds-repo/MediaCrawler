@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 
 import static com.google.common.io.Files.getFileExtension;
@@ -37,11 +36,11 @@ public class MediaCrawler extends WebCrawler {
     private static final Pattern imgPatterns = Pattern.compile(".*(\\.(bmp|gif|jpe?g|png|tiff?))$");
     private static final Pattern audioPatterns = Pattern.compile(".*(\\.(mid|mp2|mp3|wav|wma))$");
     private static final Pattern videoPatterns = Pattern.compile(".*(\\.(mp4|avi|mov|mpeg|ram|m4v|rm|smil|wmv|swf|webm))$");
-    
+
     private static final String imageFolderName = "Image";
     private static final String audioFolderName = "Audio";
     private static final String videoFolderName = "Video";
-    
+
     private final File imageFolder;
     private final File audioFolder;
     private final File videoFolder;
@@ -73,7 +72,6 @@ public class MediaCrawler extends WebCrawler {
             throw new IllegalStateException("Failed to create video folder: " + videoFolder.getAbsolutePath());
         }
 
-
         this.csvFile = new File(storageFolder, "ExportDetails.csv");
         if (!csvFile.exists()) {
             try (FileWriter writer = new FileWriter(csvFile); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("File Type", "File Extension", "File Name", "File Path", "URL", "Time of Extraction"))) {
@@ -82,11 +80,11 @@ public class MediaCrawler extends WebCrawler {
                 WebCrawler.logger.error("Failed to create CSV file: {}", csvFile, e);
             }
         } else {
-            loadexistingUrls();
+            loadExistingUrls();
         }
     }
 
-    private void loadexistingUrls() {
+    private void loadExistingUrls() {
         try (FileReader reader = new FileReader(csvFile)) {
             Iterable < CSVRecord > records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
             for (CSVRecord record: records) {
@@ -122,12 +120,12 @@ public class MediaCrawler extends WebCrawler {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             Document doc = Jsoup.parse(htmlParseData.getHtml());
 
-            Elements mediaElements = doc.select("img[src], img[data-src], video source[src], video[src], audio source[src], audio[src], a[href]");
+            Elements mediaElements = doc.select("img[src], img[data-src], video source[src], video[src], audio source[src], audio[src], a[href], .waveform");
 
             for (Element mediaElement: mediaElements) {
                 String mediaUrl = resolveMediaUrl(mediaElement);
                 if (mediaUrl != null) {
-                    if (existingUrls.contains(mediaUrl)){
+                    if (existingUrls.contains(mediaUrl)) {
                         WebCrawler.logger.warn("Skipping URL from download since it is extracted in last run: {}", mediaUrl);
                     } else if (imgPatterns.matcher(mediaUrl).matches()) {
                         downloadAndSaveFile(mediaUrl, imageFolder, imageFolderName);
@@ -139,7 +137,7 @@ public class MediaCrawler extends WebCrawler {
                 }
             }
         } else if (page.getParseData() instanceof BinaryParseData) {
-            if (existingUrls.contains(url)){
+            if (existingUrls.contains(url)) {
                 WebCrawler.logger.warn("Skipping URL from download since it is extracted in last run: {}", url);
             } else if (imgPatterns.matcher(url).matches()) {
                 downloadAndSaveFile(url, imageFolder, imageFolderName);
@@ -152,7 +150,10 @@ public class MediaCrawler extends WebCrawler {
     }
 
     private String resolveMediaUrl(Element element) {
-        String mediaUrl = element.hasAttr("abs:src") ? element.attr("abs:src") : element.hasAttr("abs:data-src") ? element.attr("abs:data-src") : element.attr("abs:href");
+        String mediaUrl = element.hasAttr("abs:src") ? element.attr("abs:src") :
+                element.hasAttr("abs:data-src") ? element.attr("abs:data-src") :
+                        element.hasAttr("data-url") ? element.attr("abs:data-url") :
+                                element.attr("abs:href");
         return mediaUrl.isEmpty() ? null : mediaUrl;
     }
 
@@ -231,7 +232,7 @@ public class MediaCrawler extends WebCrawler {
     }
 
     private void writeCsvRecord(String fileName, String fileType, String url, String filePath) {
-        String extractPath = filePath.replace(System.getProperty("user.dir") , "");
+        String extractPath = filePath.replace(System.getProperty("user.dir"), "");
         LocalDateTime currentTime = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedTime = currentTime.format(formatter);
@@ -242,7 +243,7 @@ public class MediaCrawler extends WebCrawler {
         }
 
         try (FileWriter writer = new FileWriter(csvFile, true); CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT)) {
-            csvPrinter.printRecord(fileType, extension, fileName,extractPath, url, formattedTime);
+            csvPrinter.printRecord(fileType, extension, fileName, extractPath, url, formattedTime);
             csvPrinter.flush();
             existingUrls.add(url);
         } catch (IOException e) {
