@@ -24,8 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import com.google.common.io.Files;
-
 import static com.google.common.io.Files.getFileExtension;
 
 public class MediaCrawler extends WebCrawler {
