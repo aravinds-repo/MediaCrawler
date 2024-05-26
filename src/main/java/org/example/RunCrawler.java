@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class RunCrawler {
@@ -8,13 +9,12 @@ public class RunCrawler {
         MediaCrawlController controller = new MediaCrawlController();
 
         // Sample Image Domain
-//        controller.startCrawling(List.of("https://www.shutterstock.com/"));
+//        controller.startCrawling("https://www.shutterstock.com/");
 
         // Sample Audio Domain
-//        controller.startCrawling(List.of("https://www.chosic.com/download-audio/27966/"));
+//        controller.startCrawling("https://www.chosic.com/download-audio/27966/");
 
         // Sample Video Domain
-//        controller.startCrawling(List.of("https://www.freepik.com/videos"));
-
+//        controller.startCrawling("https://www.freepik.com/videos");
     }
 }
