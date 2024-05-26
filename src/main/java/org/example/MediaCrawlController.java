@@ -14,7 +14,6 @@ public class MediaCrawlController {
 
     public MediaCrawlController() {
         config = new CrawlConfig();
-        config.setCrawlStorageFolder(System.getProperty("user.dir") + "/crawl_history");
         config.setMaxDepthOfCrawling(1);
         config.setIncludeBinaryContentInCrawling(true);
     }
@@ -23,22 +22,29 @@ public class MediaCrawlController {
         String domainName = domain.replaceAll("https?://", "").replaceAll("[^a-zA-Z0-9]", "_");
         String extractPath = System.getProperty("user.dir") + "/extract/" + domainName;
 
-        PageFetcher pageFetcher = new PageFetcher(config);
-        RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
-        RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
-        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
-        controller.addSeed(domain);
+        config.setCrawlStorageFolder(System.getProperty("user.dir") + "/crawl_history/" + domainName);
 
         File storageFolder = new File(extractPath);
         if (!storageFolder.exists() && !storageFolder.mkdirs()) {
             throw new IllegalStateException("Failed to create storage folder: " + storageFolder.getAbsolutePath());
         }
 
-        CrawlController.WebCrawlerFactory < MediaCrawler > factory = () -> new MediaCrawler(storageFolder, domain);
+        CrawlController controller = createController(domain);
+
+        CrawlController.WebCrawlerFactory<MediaCrawler> factory = () -> new MediaCrawler(storageFolder, domain);
         controller.start(factory, 8);
 
         Thread.sleep(30 * 1000);
         controller.shutdown();
         controller.waitUntilFinish();
+    }
+
+    private CrawlController createController(String domain) throws Exception {
+        PageFetcher pageFetcher = new PageFetcher(config);
+        RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
+        RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
+        CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+        controller.addSeed(domain);
+        return controller;
     }
 }

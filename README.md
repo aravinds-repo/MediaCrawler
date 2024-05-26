@@ -224,6 +224,7 @@ The `MediaCrawlController` class is responsible for controlling the web crawling
 
 - **Methods:**
    - `startCrawling`: Initiates the crawling process for the specified list of crawl domains.
+   - `createController` : Handles the creation and configuration of the CrawlController.
 
 ### Usage
 
