@@ -43,7 +43,7 @@ public class MediaCrawler extends WebCrawler {
     private final String domain;
     private final File csvFile;
 
-    private static final int MAX_FILES = 10;
+    private static final int MAX_FILES = 30;
     private static final Set < String > imageUrls = new HashSet < > ();
     private static final Set < String > audioUrls = new HashSet < > ();
     private static final Set < String > videoUrls = new HashSet < > ();
@@ -200,6 +200,25 @@ public class MediaCrawler extends WebCrawler {
                         bos.flush();
                         WebCrawler.logger.info("Stored: {} in {}", url, filePath);
                         writeCsvRecord(fileName, fileType, url, filePath);
+                        switch (fileType) {
+                            case imageFolderName:
+                                imageUrls.add(url);
+                                mediaUrls.add(url);
+                                break;
+
+                            case audioFolderName:
+                                audioUrls.add(url);
+                                mediaUrls.add(url);
+                                break;
+
+                            case videoFolderName:
+                                videoUrls.add(url);
+                                mediaUrls.add(url);
+                                break;
+
+                            default:
+                                break;
+                        }
                     } catch (IOException e) {
                         WebCrawler.logger.error("Error downloading file: {}", url, e);
                     }
@@ -209,26 +228,6 @@ public class MediaCrawler extends WebCrawler {
                 connection.disconnect();
             } catch (IOException e) {
                 WebCrawler.logger.error("Error downloading file: {}", url, e);
-            }
-
-            switch (fileType) {
-                case imageFolderName:
-                    imageUrls.add(url);
-                    mediaUrls.add(url);
-                    break;
-
-                case audioFolderName:
-                    audioUrls.add(url);
-                    mediaUrls.add(url);
-                    break;
-
-                case videoFolderName:
-                    videoUrls.add(url);
-                    mediaUrls.add(url);
-                    break;
-
-                default:
-                    break;
             }
         }
     }
