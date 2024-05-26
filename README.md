@@ -104,7 +104,7 @@ The crawling configuration is defined in the MediaCrawlController class. By defa
 Run the main method in the RunCrawler class using your IDE or from the command line:
 
 ```sh
-mvn exec:java -Dexec.mainClass="org.example.RunCrawler"
+mvn exec:java
 ```
 
 ## Output
