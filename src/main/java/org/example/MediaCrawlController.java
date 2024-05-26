@@ -38,6 +38,10 @@ public class MediaCrawlController {
 
             CrawlController.WebCrawlerFactory < MediaCrawler > factory = () -> new MediaCrawler(storageFolder, domain);
             controller.start(factory, 8);
+
+            Thread.sleep(30 * 1000);
+            controller.shutdown();
+            controller.waitUntilFinish();
         }
     }
 }

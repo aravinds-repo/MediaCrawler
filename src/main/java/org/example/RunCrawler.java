@@ -10,11 +10,12 @@ public class RunCrawler {
         List < String > urls = List.of(
                 "https://www.freepik.com/videos",
                 "https://www.shutterstock.com/",
-                "https://www.chosic.com/download-audio/25858/"
+                "https://www.chosic.com/free-music/all/"
         );
 
         for (String url: urls) {
             System.out.println("Starting crawl for URL: " + url);
+            Thread.sleep(5 * 1000);
             controller.startCrawling(List.of(url));
             System.out.println("Completed crawl for URL: " + url);
         }
