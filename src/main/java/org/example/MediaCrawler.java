@@ -43,7 +43,7 @@ public class MediaCrawler extends WebCrawler {
     private final String domain;
     private final File csvFile;
 
-    private static final int MAX_FILES = 30;
+    private static final int MAX_FILES = 10;
     private static final Set < String > imageUrls = new HashSet < > ();
     private static final Set < String > audioUrls = new HashSet < > ();
     private static final Set < String > videoUrls = new HashSet < > ();
